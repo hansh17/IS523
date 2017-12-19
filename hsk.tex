@@ -24,19 +24,22 @@ $PRIME+PROBE$ attacks first loads and occupies a cache set, a set of cache lines
 $FLUSH+RELOAD$ attacks relies upon the inclusive property of the cache policy that is held by the Intel chips. The inclusive property of the cache is that everything on L1 cache should be also on L3 cache. Thus, whenever a cache line is loaded on L1 cache, they are also loaded on L3 cache. Likewise, when a CLFLUSH, or cache flush is called for a cache line within L1 cache, then the same line is evicted from L3 cache.\par
 The basic idea of $FLUSH+RELOAD$ is both victim core and the attacker's core load same line of data or instruction from the shared memory. Then the attacker flush the shared cache line from its core. Flushed from the L1 cache, the same line is evicted from L3 cache, and also evicted from the victim's L1 cache as a cascade. Now what we have to observe is that whenever victim cache reloads the same line onto its cache, the very same line is loaded onto the L3 cache again. Meaning that when the attacker reloads the line, the reload time is shortened. This attack obviously need a shared memory between the victim and the attacker, but as an opposite to the $PRIME+PROBE$ attack, it can attack as small as a single line, giving more granuality on the attack.
 
-\section{Attacks on the Block Ciphers and Its Applications}
+\section{Attacks on the Symmetric Ciphers and Its Applications}
 
-The contents of the first section lalalalalalalalalalllllllllllllllllllllllllllllllll.
+We now would first introduce several studies about the recent cache related attack, then would also introduce attacks on the searchable encryption. As a notice, these attacks are not developed to solely attack the symmetric ciphers, but are capable in attacking them. For example, the cache attacks doesn't pin point to break the block ciphers, but also is applicable to various privacy breachings such as detecting the mobile touch or swipe, or retrieving RSA keys. Also, the searchable encryption, by itself, can utilize either the symmetic key ciphers or public key ciphers.
 
-\subsection{Searchable Encryption Attacks}
+\subsection{Cache Attacks}
 
-\subsubsection{Lalalala}
+Recent studies on the cache level attacks, such as ARMageddon, are focusing more on either extending pre-existing attack on other platforms such as ARM processors, which may lack some components in launching classic cache attacks, such as $FLUSH+RELOAD$. Other research, $PRIME+ABORT$, focuses on integrating the new hardware features on the cache attacks so that the performance of the attack is improved.
 
-\subsection{Cache Side-channel Attacks}
+\subsubsection{ARMageddon}
 
-\section{Background}
+Our known and famous $FLUSH+RELOAD$ attack was designed to attack the Intel x86 architecture with its cache policy and assembly intact. Meaning that it had the inclusive cache policy with shared cache for all cores in all of its products, an instruction that would easily flush the cache line, and lastly an easy way to time the cache loading. However, ARM core lacks all of those, which in this paper stated as the challenge as ARM architecture has no inclusive cache policy, big.LITTLE makes some of their chips shipped without shared cache, no explicitly known instruction that would flush a cache line flat, and their cache load time is a priviliged instruction.
+\par Yet, they successfully tackle these problem by exploiting the cache coherency policy, which loads a cache line from remote CPU if available, and from DRAM if not. This makes them to be able to detect whether the certain line of the cache is loaded on the core other than the attacker's and also independent from the shared cache. Furthermore, they replaced the flushing with a random eviction bringing the idea from the rowhammer attack. Finally, they solved the timing challenge with other instructions such as system call or clock time measuring. This attack made previous $FLUSH+RELOAD$ attack available for ARM architecture, which is widely used in the mobile devices. They were not only able to retrieve the T-Table and the key for AES in openSSL library, but also detect touch or swipe and gather data leaked from ARM TrustZone.
 
+\subsubsection{PRIME+ABORT}
 
+$PRIME+ABORT$ focuses on integrating new hardware feature for Intel chips, namely Intel TSX. Simply put, Intel TSX is the hardware implementation of transactional memory, which has similar concept to a transaction in the database. Utilizing Intel TSX goes as follows, a transaction of instructions are either completed or aborted in the transactional memory. Among those abortion conditions, there is a rule that aborts a transaction whenever the cache that the transation is currently using is evicted, the transaction is aborted. Using this rule, the attacker would detect the cache eviction right away instead of wating a fixed term and measuing the data read time. Thus, the real attack loads and occupies whole cache set with the transactional memory, which is similar to the $PRIME+PROBE$. Then the attacker waits for the victim to evict the cache. When the victim evicts the cache, then the transaction is aborted right away, letting the attacker know the exact moment the cache is evicted. This attack proves to be more superior to $PRIME+PROBE$ as it doesn't require any kind of timer as eviction is detected right away. Also this attack is much faster and has less noise than the existing one.
 
 \section{Classification}
 

@@ -1,281 +1,51 @@
-@inproceedings{Shor,
-  title={Algorithms for quantum computation: Discrete logarithms and factoring},
-  author={Shor, Peter W},
-  booktitle={Proceedings, 35th Annual Symposium on Foundations of Computer Science, FOCS'94},
-  pages={124--134},
-  year={1994},
-  organization={IEEE}
+
+@misc{TLS1,
+  author = {T. Dierks and E. Rescorla},
+  title = {The Transport Layer Security (TLS) Protocol Version 1.2. RFC 5246, Internet Engineering Task Force\},
+  year = {2008}
 }
 
-@article{regev,
-  title={On lattices, learning with errors, random linear codes, and cryptography},
-  author={Regev, Oded},
-  journal={Journal of the ACM, JACM'09},
-  volume={56},
-  number={6},
-  pages={34},
-  year={2009},
-  publisher={ACM}
+@misc{TLS2,
+  author = {},
+  title = {{TLS 1.3}},
+  howpublished = "\url{https://tlswg.github.io/tls13-spec/draft-ietf-tls-tls13.html}"
 }
 
-@inproceedings{BCNS,
-  title={Post-quantum key exchange for the {TLS} protocol from the ring learning with errors problem},
-  author={Bos, Joppe W and Costello, Craig and Naehrig, Michael and Stebila, Douglas},
-  booktitle={IEEE Symposium on Security and Privacy, IEEE S\&P'15},
-  pages={553--570},
+@inproceedings{drown,
+  title={DROWN: Breaking TLS Using SSLv2.},
+  author={Aviram, Nimrod and Schinzel, Sebastian and Somorovsky, Juraj and Heninger, Nadia and Dankel, Maik and Steube, Jens and Valenta, Luke and Adrian, David and Halderman, J Alex and Dukhovni, Viktor and others},
+  booktitle={USENIX Security Symposium},
+  pages={689--706},
+  year={2016}
+}
+
+@misc{Openssl,
+  author = {},
+  title = {{Upgrading OpenSSL to prevent DROWN attack}},
+  howpublished = "\url{http://http://blog.alyac.co.kr/554}"
+}
+
+@inproceedings{logjam,
+  title={Imperfect forward secrecy: How Diffie-Hellman fails in practice},
+  author={Adrian, David and Bhargavan, Karthikeyan and Durumeric, Zakir and Gaudry, Pierrick and Green, Matthew and Halderman, J Alex and Heninger, Nadia and Springall, Drew and Thom{\'e}, Emmanuel and Valenta, Luke and others},
+  booktitle={Proceedings of the 22nd ACM SIGSAC Conference on Computer and Communications Security},
+  pages={5--17},
   year={2015},
-  organization={IEEE}
-}
-
-@article{bindel,
-  title={Pseudorandom functions and lattices},
-  author={Banerjee, Abhishek and Peikert, Chris and Rosen, Alon},
-  journal={Advances in Cryptology, EUROCRYPT'12},
-  pages={719--737},
-  year={2012},
-  publisher={Springer}
-}
-
-@inproceedings{gentry,
-  title={Trapdoors for hard lattices and new cryptographic constructions},
-  author={Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod},
-  booktitle={Proceedings of the fortieth annual ACM symposium on Theory of computing, STOC'08},
-  pages={197--206},
-  year={2008},
   organization={ACM}
 }
-
-@inproceedings{frodo,
-  title={Frodo: Take off the ring! practical, quantum-secure key exchange from {LWE}},
-  author={Bos, Joppe and Costello, Craig and Ducas, L{\'e}o and Mironov, Ilya and Naehrig, Michael and Nikolaenko, Valeria and Raghunathan, Ananth and Stebila, Douglas},
-  booktitle={Proceedings of the 2016 ACM SIGSAC Conference on Computer and Communications Security, ACM CCS'16},
-  pages={1006--1018},
-  year={2016},
-  organization={ACM}
+@article{diffie,
+  title={New directions in cryptography},
+  author={Diffie, Whitfield and Hellman, Martin},
+  journal={IEEE transactions on Information Theory},
+  volume={22},
+  number={6},
+  pages={644--654},
+  year={1976},
+  publisher={IEEE}
 }
 
-@inproceedings {Newhope,
-author = {Erdem Alkim and L{\'e}o Ducas and Thomas P{\"o}ppelmann and Peter Schwabe},
-title = {Post-quantum Key Exchange{\textemdash}A New Hope},
-booktitle = {25th USENIX Security Symposium, USENIX Security'16},
-year = {2016},
-isbn = {978-1-931971-32-4},
-pages = {327--343},
-url = {https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/alkim},
-}
-
-@inproceedings{Hoff98,
-  title={{NTRU}: A ring-based public key cryptosystem},
-  author={Hoffstein, Jeffrey and Pipher, Jill and Silverman, Joseph H},
-  booktitle={International Algorithmic Number Theory Symposium, ANTS'98},
-  pages={267--288},
-  year={1998},
-  organization={Springer}
-}
-
-@inproceedings{lindner,
-  title={Better Key Sizes (and Attacks) for {LWE-Based} Encryption.},
-  author={Lindner, Richard and Peikert, Chris},
-  booktitle={Cryptographers’ Track at the RSA Conference, CT-RSA'11},
-  volume={6558},
-  pages={319--339},
-  year={2011},
-  organization={Springer}
-}
-
-@inproceedings{CDSA97,
-  title={Lattice attacks on {NTRU}},
-  author={Coppersmith, Don and Shamir, Adi},
-  booktitle={Advances in Cryptology, EUROCRYPT'97},
-  volume={1233},
-  pages={52--61},
-  year={1997},
-  organization={Springer}
-}
-
-@article{HGN07,
-  title={A hybrid lattice-reduction and meet-in-the-middle attack against {NTRU}},
-  author={Howgrave-Graham, Nick},
-  journal={Advances in Cryptology, CRYPTO'07},
-  pages={150--169},
-  year={2007},
-  publisher={Springer}
-}
-
-
-@inproceedings{Silver07,
-  title={Timing attacks on {NTRUEncrypt} via variation in the number of hash calls},
-  author={Silverman, Joseph H and Whyte, William},
-  booktitle={Cryptographers’ Track at the RSA Conference, CT-RSA'07},
-  pages={208--224},
-  year={2007},
-  organization={Springer}
-}
-
-@article{von,
-  title={Various techniques used in connection with random digits, Paper No. 13 in “monte carlo method”},
-  author={von Neumann, J},
-  journal={NBS Applied Mathematics Series, NBS AMS'61},
-  number={12},
-  year={1961}
-}
-
-@inproceedings{blomer,
-  title={A practical second-order fault attack against a real-world pairing implementation},
-  author={Bl{\"o}mer, Johannes and Da Silva, Ricardo Gomes and G{\"u}nther, Peter and Kr{\"a}mer, Juliane and Seifert, Jean-Pierre},
-  booktitle={Fault Diagnosis and Tolerance in Cryptography 2014 Workshop on, FDTC'14},
-  pages={123--136},
-  year={2014},
-  organization={IEEE}
-}
-
-@inproceedings{nguyen,
-  title={Learning a parallelepiped: Cryptanalysis of {GGH} and {NTRU} signatures},
-  author={Nguyen, Phong Q and Regev, Oded},
-  booktitle={Annual International Conference on the Theory and Applications of Cryptographic Techniques, EUROCRYPT'06},
-  pages={271--288},
-  year={2006},
-  organization={Springer}
-}
-
-@article{Kamall2,
-  title={Fault analysis of the {NTRUSign} digital signature scheme},
-  author={Kamal, Abdel Alim and Youssef, Amr M},
-  journal={Cryptography and Communications Discrete Structures, Boolean Functions and Sequences, CCDS'12},
-  volume={4},
-  number={2},
-  pages={131--144},
-  year={2012},
-  publisher={Springer}
-}
-
-@article{Halderman09,
-  title={Lest we remember: cold-boot attacks on encryption keys},
-  author={Halderman, J Alex and Schoen, Seth D and Heninger, Nadia and Clarkson, William and Paul, William and Calandrino, Joseph A and Feldman, Ariel J and Appelbaum, Jacob and Felten, Edward W},
-  journal={Communications of the ACM, CACM'09},
-  volume={52},
-  number={5},
-  pages={91--98},
-  year={2009},
-  publisher={ACM}
-}
-
-@article{Wang13,
-  title={Power analysis attacks and countermeasures on {NTRU}-based wireless body area networks},
-  author={Wang, An and Zheng, Xuexin and Wang, Zongyue},
-  journal={KSII Transactions on Internet and Information Systems, TIIS'13},
-  volume={7},
-  number={5},
-  pages={1094--1107},
-  year={2013}
-}
-
-@article{Song09,
-  title={Power analysis attacks against {NTRU} and their countermeasures},
-  author={Song, Jeong-Eun and Han, Dong-Guk and Lee, Mun-Kyu and Choi, Doo-Ho},
-  journal={Journal of the Korea Institute of Information Security and Cryptology, JKIISC'09},
-  volume={19},
-  number={2},
-  pages={11--21},
-  year={2009},
-  publisher={Korea Institutes of Information Security and Cryptology}
-}
-
-@inproceedings{Kamal12,
-  title={A scan-based side channel attack on the {NTRUEncrypt} cryptosystem},
-  author={Kamal, Abdel Alim and Youssef, Amr M},
-  booktitle={Availability, Reliability and Security, 2012 Seventh International Conference on, ARES'12},
-  pages={402--409},
-  year={2012},
-  organization={IEEE}
-}
-
-@incollection{BLISS,
-  title={Lattice signatures and bimodal gaussians},
-  author={Ducas, L{\'e}o and Durmus, Alain and Lepoint, Tancr{\`e}de and Lyubashevsky, Vadim},
-  booktitle={Advances in Cryptology, CRYPTO'13},
-  pages={40--56},
-  year={2013},
-  publisher={Springer}
-}
-
-@inproceedings{Paterson17,
-  title={Cold Boot Attacks on {NTRU}},
-  author={Paterson, Kenneth G and Villanueva-Polanco, Ricardo},
-  booktitle={International Conference in Cryptology in India, INDOCRYPT'17},
-  pages={107--125},
-  year={2017},
-  organization={Springer}
-}
-@article{Kamal11,
-  title={Fault analysis of the {NTRUEncrypt} cryptosystem},
-  author={Kamal, Abdel Alim and Youssef, Amr},
-  journal={IEICE transactions on fundamentals of electronics, communications and computer sciences, IEICE TFECCS'11},
-  volume={94},
-  number={4},
-  pages={1156--1158},
-  year={2011},
-  publisher={The Institute of Electronics, Information and Communication Engineers}
-}
-@article{Lee10,
-  title={Countermeasures against power analysis attacks for the {NTRU} public key cryptosystem},
-  author={Lee, Mun-Kyu and Song, Jeong Eun and Choi, Dooho and Han, Dong-Guk},
-  journal={IEICE transactions on fundamentals of electronics, communications and computer sciences, IEICE TFECCS'10},
-  volume={93},
-  number={1},
-  pages={153--163},
-  year={2010},
-  publisher={The Institute of Electronics, Information and Communication Engineers}
-}
-
-@article{lizard,
-  title={Lizard: Cut off the Tail!//Practical Post-Quantum Public-Key Encryption from {LWE} and {LWR}.},
-  author={Cheon, Jung Hee and Kim, Duhyeong and Lee, Joohee and Song, Yong Soo},
-  journal={IACR Cryptology ePrint Archive},
-  volume={2016},
-  pages={1126},
-  year={2016}
-}
-
-@inproceedings{Faultattack,
-  title={Lattice-Based Signature Schemes and their Sensitivity to Fault Attacks},
-  author={Bindel, Nina and Buchmann, Johannes and Kramer, Juliane},
-  booktitle={Cryptology ePrint Archive, \quad Report 2016/415},
-  note={http://eprint.iacr.org/2016/415},
-  year={2016}
-}
-
-@article{Atici08,
-  title={Power analysis on {NTRU} implementations for RFIDs: First results},
-  author={Atici, AC and Batina, Lejla and Gierlichs, Benedikt and Verbauwhede, Ingrid},
-  year={2008},
-  publisher={Sl: sn}
-}
-
-@misc{IEEE,
-  author = {},
-  title = {{IEEE P1363: Standard Specifications For Public Key Cryptography}},
-  howpublished = "\url{http://grouper.ieee.org/groups/1363/}",
-  year = {2014}
-}
-
-
-@misc{NIST,
-  author = {},
-  title = {{Proposed submission requirements and evaluation criteria for the post-quantum cryptography standardization process}},
-  howpublished = "\url{http://csrc.nist.gov/groups/ST/post-quantum-crypto/documents/
-call-for-proposals-draft-aug-2016.pdf}"
-  
-}
 
 %-------------------------------------------------------
-
-
-
-
-
-
-
 
 
 

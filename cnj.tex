@@ -1,9 +1,13 @@
 % SCIS 2018 English manuscript (for LaTeX2e)
 \documentclass[a4paper]{article}
 \usepackage{Style}
+\usepackage{graphics, graphicx}
+\usepackage{enumitem}
+\usepackage{color}
+\usepackage{amsfonts}
+\usepackage{url}
 % If you use LaTeX 2.09, delete the above two lines and remove '%' below.
 %\documentstyle[scis2018e]{jarticle}
-
 \begin{document}
 
 \title{
@@ -37,12 +41,76 @@
 The contents of the first section.
 
 \section{Background}
+\subsection{SSL/TLS}
+Secure Sockets Layer (SSL) is a kind of Internet Protocol (IP) for communication on Internet. SSL was developed by Netscape Corporation in 1993. The goal of this protocol is that overcome the problem of no confidentiality. SSL ver3.0 is standardized in Internet Engineering Task Force (IETF) and re-named Transport Layer Security (TLS).
 
+Standardized TLS \cite{TLS1, TLS2} ensures secure connection between a server and a client. This protocol uses records as a fundamental unit in communication. With these records, the server and the client initiates handshake protocol, where they negotiate the cipher they will use to encrypt the application itself and exchange the master key used for the encryption. Therefore, TLS provides effective functions such as identity verification, message integrity, and confidentiality.
 
+Although this protocol (TLS 1.2) is used as a standard in Internet, it had various vulnerabilities, either from its structure or implementation, which led many different attacks to threat the secrecy, including timing attacks or heartbleed attacks that we are going to discuss later. To deal these attacks, TLS 1.3 drafts are currently developed and some of them are in use nowadays. Amongst those, most commonly used method is to build a tunnel through SSL channel, where the traffic from the user is encrypted using either SSL or TSL protocol. By using already secure channel that is implemented in web browsers, this method allows users to access to their web browsers simply.
 
+\subsection{Key Exchange}
+The secret key is no longer meaningful when both parties exchange their secret keys publicly.
+Therefore, they need to hide each other's secret keys from others. Key exchange is a method for secure communication satisfying this condition between each other. Therefore, the shared key must be known only to the sender and the receiver, and they should be able to check whether each other is the one with which they want to communicate. If an attacker intercepts data in the middle, the attacker must not be able to retrieve the value of the shared key from the data.
+
+\subsection{Diffie–Hellman Key Exchange}
+Diffie-Hellman key exchange \cite{diffie} is one way to exchange cryptographic keys, allowing two people to share a common secret key over an unencrypted network. Diffie and Hellman published it in 1976. Diffie-Hellman key exchange has established a basic cryptographic communication method and is still in use today. In 1977, RSA encryption, a public key cryptosystem, was proposed. Diffie-Hellman key exchange is performed as follows.
+\begin{enumerate}[label=]
+      \item 1) First, Alice chooses a prime $p$ and an integer $g$ from 1 to $p-1$ and shares it with Bob in advance. 
+      
+      \item 2) Alice selects integer $a$. This integer is not disclosed to the outside, and Bob is also unknown.
+      
+      \item 3) Alice calculates $A = g^{a}\ mod\ p$
+      \item 4) Bob also selects integer b and calculates $B = g^{b}\ mod\ p$
+      \item 5) Alice and Bob send $A$ and $B$ to each other
+      \item 6) Alice calculates $B^{a}\ mod\ p$ and Bob calculates $A^{b}\ mod\ p$
+      \item 7) $B^a\ mod\ p = (g^b)^a\ mod\ p = g^{ab}\ mod\ p$ and $A^b\ mod\ p = (g^a)^b\ mod\ p = g^{ab}\ mod\ p$
+      \item 8) Finally, Alice and Bob share a common secret key of $g^{ab}\ mod\ p$
+\end{enumerate}
+Here, if $p$ is sufficiently large, an attacker who wants to know the secret key from the outside can not calculate the secret key, so that secure key exchange becomes possible.
 \section{Classification}
+\subsection{DROWN Attack}
+Aviram \textit{et al}.\cite{drown} introduced the Decrypting RSA with Obsolete and Weakened eNcryption (DROWN)  Attack at USENIX in 2016. Generally, SSL / TLS-based certificates use public key algorithms such as RSA. Therefore, in SSL / TLS, many public key related attacks and vulnerabilities are found. Figure 1\footnote{https://www.globalsign.com/en/blog/drown-attack-sslv2/} shows recently discovered vulnerabilities in order. In particular DROWN attack is a relatively recent attack. This vulnerability is known to be a problem with SSLv2. So DROWN shows that supporting SSLv2 is a threat to servers and clients. Nevertheless, there are still many servers using SSLv2. SSLv2 has an RSA-based key exchange process called the Pre Master Secret (PMS) and DROWN applies the attack to this part. TLS also supports RSA, but TLS can respond to attacks on encryption and SSLv2 is not.
 
+The basic scenario of DROWN attack is as follows. 
+\begin{enumerate}[label=]
+      \item 1) The attacker sniffs the encrypted PMS, sends a lot of related values to the server, and attempts to decrypt the PMS.
+      
+      \item 2) 2) If PMS decryption is successful through this process, it can find the key value exchanged through RSA and decrypt SSL using this key.
+\end{enumerate}  
 
+To decrypt a 2048-bit RSA TLS ciphertext, an attacker must observe 1,000 TLS handshakes, initiate 40,000 SSLv2 connections, and perform $2^{50}$ work. Because most people will not buy multiple certificates, TLS and SSLv2 protocols often use the same private key. Therefore, due to a bug in SSLv2, TLS can be easily applied to attacks. The DROWN attack uses this exact method to break encryption. Actually the authors have implemented the attack and can decrypt a TLS 1.2 handshake using 2048-bit RSA in under 8 hours, at a cost of \$440 on Amazon EC2. So SSLv2 is not only weak, but actively harmful to the TLS ecosystem.
+
+It is very important to prevent this attack, because if we are attacked by a DROWN attack, we will give away important information such as user-names and passwords, credit card numbers, emails, instant messages, and sensitive documents. However, contrary to expectations, the way to prevent a DROWN attack is very simple. As mentioned earlier, this attack starts in the SSLv2 key exchange process, so if we do not use SSLv2, we can effectively prevent the attack. Upgrading OpenSSL\footnote{OpenSSL is a cryptographic library used in many server products. For users of OpenSSL, the easiest and recommended solution is to upgrade to a recent OpenSSL version.} is also a good solution. This method \cite{Openssl} is described in detail on the Internet.
+
+\subsection{Logjam Attack}
+Adrian \textit{et al}.\cite{logjam} introduced Logjam attack in 2015. Unlike DROWN attacks based on the construction of the SSLv2 protocol, Logjam attacks are based on the underlying construction issues of the TLS protocol. This attack can downgrade the TLS connection from the existing 1024 bits to the 512 bit grade encryption through a Man-In-The-Middle (MITM) attack. Therefore, both Web browsers and mail servers using TLS may be exposed to this vulnerability. In particular, Diffie-Hellman key exchange is a popular cryptographic algorithm that allows Internet protocols to agree on a shared key and negotiate a secure connection. However, this Diffie-Hellman key exchange can be used as a means of Logjam attack. In an MITM attack for this attack, the attacker tries to connect to the server using the \textbf{DHE$\_$EXPORT} cipher suite instead of the client. This can be performed by a fault in the diffie-Hellman key exchange-based TLS protocol. A key that has been reduced to 512 bits due to an MITM attack can be recovered through numerous CPUs.
+
+This problem can also be resolved by updating the version of OpenSSL as well as the DROWN attack. This is because TLS client protection has been added to deny handshake if the Diffie-Hellman parameter is shorter than 768 bits. It is also a good solution to disable the attacking \textbf{DHE$\_$EXPORT} and create a new 2048-bit Diffie-Hellman group.
+
+\subsection{FREAK Attack}
+Factoring RSA Export keys (FREAK) attack that was introduced in 2015 is similar to Logjam attack. Both attacks weaken the cryptosystem by reducing the key size to 512 bits. However, FREAK attack is a running-related vulnerability and Logjam attack differs in that it is a vulnerability in the underlying construction of the TLS protocol itself.
+
+\begin{table}[]
+\centering
+\caption{Recent SSL/TLS Vulnerabilities}
+\label{my-label}
+\renewcommand{\tabcolsep}{0.7mm}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Date}                                             & \textbf{Name}                                                    & \textbf{Vulnerability}                                                                            & \textbf{Mitigation}                                                                                 \\ \hline
+\hline
+\begin{tabular}[c]{@{}c@{}}September\\  2011\end{tabular} & BEAST                                                            & \begin{tabular}[c]{@{}c@{}}TLS 1.0,\\ earlier \\ protocols \\ result\end{tabular}                 & \begin{tabular}[c]{@{}c@{}}Use only \\ AES-GCM\\  suites supported \\ only in TLS 1.2.\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}c@{}}August \\ 2012\end{tabular}    & BREACH                                                           & \begin{tabular}[c]{@{}c@{}}Leaks \\ plaintext \\ information\end{tabular}                         & \begin{tabular}[c]{@{}c@{}}Disable HTTP \\ compression\end{tabular}                                 \\ \hline
+\begin{tabular}[c]{@{}c@{}}June\\  2013\end{tabular}      & CRIME                                                            & \begin{tabular}[c]{@{}c@{}}Attacker can \\ leverage \\ information\\  leaked\end{tabular}         & \begin{tabular}[c]{@{}c@{}}Disable \\ TLS/SPDY \\ compression\end{tabular}                          \\ \hline
+\begin{tabular}[c]{@{}c@{}}February\\  2013\end{tabular}  & Lucky13                                                          & \begin{tabular}[c]{@{}c@{}}CBC-mode \\ encryption\\  TLS, DTLS\end{tabular}                       & \begin{tabular}[c]{@{}c@{}}Update \\ OpenSSL\end{tabular}                                           \\ \hline
+\begin{tabular}[c]{@{}c@{}}April \\ 2014\end{tabular}     & Heartbleed                                                       & \begin{tabular}[c]{@{}c@{}}OpenSSL bug \\ that could \\ be exploited\end{tabular}                 & \begin{tabular}[c]{@{}c@{}}Update \\ OpenSSL\end{tabular}                                           \\ \hline
+\begin{tabular}[c]{@{}c@{}}October\\  2014\end{tabular}   & POODLE                                                           & \begin{tabular}[c]{@{}c@{}}Attackers can \\ cause server \\ to fall back \\ to SSLv3\end{tabular} & \begin{tabular}[c]{@{}c@{}}Disable \\ SSLv3,\end{tabular}                                           \\ \hline
+\begin{tabular}[c]{@{}c@{}}March \\ 2015\end{tabular}     & \begin{tabular}[c]{@{}c@{}}Bar \\ Mitzvah\\  Attack\end{tabular} & \begin{tabular}[c]{@{}c@{}}Exploits\\ outdated \\ RC4 \\ encryption\end{tabular}                  & \begin{tabular}[c]{@{}c@{}}Disable \\ RC4\end{tabular}                                              \\ \hline
+\begin{tabular}[c]{@{}c@{}}March\\  2015\end{tabular}     & FREAK                                                            & \begin{tabular}[c]{@{}c@{}}Clients \\ can be \\ downgraded\end{tabular}                           & \begin{tabular}[c]{@{}c@{}}Disable export \\ ciphers in server \\ configurations\end{tabular}       \\ \hline
+\begin{tabular}[c]{@{}c@{}}May \\ 2015\end{tabular}       & Logjam                                                           & \begin{tabular}[c]{@{}c@{}}Servers using\\  Duffie-hellman \\ key exchange\end{tabular}           & \begin{tabular}[c]{@{}c@{}}Disable \\ DHE\_EXPORT\\  ciphers\end{tabular}                           \\ \hline
+\begin{tabular}[c]{@{}c@{}}March\\  2016\end{tabular}     & DROWN                                                            & \begin{tabular}[c]{@{}c@{}}Sites that \\ support \\ SSLv2\end{tabular}                            & \begin{tabular}[c]{@{}c@{}}Disable SSLv2 \\ and/or update\\  OpenSSL\end{tabular}                   \\ \hline
+\end{tabular}
+\end{table}
 
 \section{Evaluation}
 
@@ -52,12 +120,10 @@ The contents of the first section.
 
 
 
-\begin{thebibliography}{9}
-\bibitem{a}
-Authors, ``Title,'' {\em Journal}, Pages, etc...
-\bibitem{b}
-Authors, {\em Book title}, Publisher, Year, etc...
-\end{thebibliography}
+\bibliographystyle{ieeetr}
+\begin{small}
+\bibliography{mypaper}
+\end{small}
 
 \end{document}
 % end of file

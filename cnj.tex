@@ -67,8 +67,22 @@ Diffie-Hellman key exchange \cite{diffie} is one way to exchange cryptographic k
       \item 8) Finally, Alice and Bob share a common secret key of $g^{ab}\ mod\ p$
 \end{enumerate}
 Here, if $p$ is sufficiently large, an attacker who wants to know the secret key from the outside can not calculate the secret key, so that secure key exchange becomes possible.
+
+
 \section{Classification}
-\subsection{DROWN Attack}
+
+
+
+\subsection{symmetric key}
+\subsubsection{cache attacks}
+\subsubsection{searchable encryption attack}
+
+
+
+
+\subsection{public key}
+\subsubsection{Certificate}
+\subsubsection*{DROWN Attack}
 Aviram \textit{et al}.\cite{drown} introduced the Decrypting RSA with Obsolete and Weakened eNcryption (DROWN)  Attack at USENIX in 2016. Generally, SSL / TLS-based certificates use public key algorithms such as RSA. Therefore, in SSL / TLS, many public key related attacks and vulnerabilities are found. Figure 1\footnote{https://www.globalsign.com/en/blog/drown-attack-sslv2/} shows recently discovered vulnerabilities in order. In particular DROWN attack is a relatively recent attack. This vulnerability is known to be a problem with SSLv2. So DROWN shows that supporting SSLv2 is a threat to servers and clients. Nevertheless, there are still many servers using SSLv2. SSLv2 has an RSA-based key exchange process called the Pre Master Secret (PMS) and DROWN applies the attack to this part. TLS also supports RSA, but TLS can respond to attacks on encryption and SSLv2 is not.
 
 The basic scenario of DROWN attack is as follows. 
@@ -82,13 +96,31 @@ To decrypt a 2048-bit RSA TLS ciphertext, an attacker must observe 1,000 TLS han
 
 It is very important to prevent this attack, because if we are attacked by a DROWN attack, we will give away important information such as user-names and passwords, credit card numbers, emails, instant messages, and sensitive documents. However, contrary to expectations, the way to prevent a DROWN attack is very simple. As mentioned earlier, this attack starts in the SSLv2 key exchange process, so if we do not use SSLv2, we can effectively prevent the attack. Upgrading OpenSSL\footnote{OpenSSL is a cryptographic library used in many server products. For users of OpenSSL, the easiest and recommended solution is to upgrade to a recent OpenSSL version.} is also a good solution. This method \cite{Openssl} is described in detail on the Internet.
 
-\subsection{Logjam Attack}
-Adrian \textit{et al}.\cite{logjam} introduced Logjam attack in 2015. Unlike DROWN attacks based on the construction of the SSLv2 protocol, Logjam attacks are based on the underlying construction issues of the TLS protocol. This attack can downgrade the TLS connection from the existing 1024 bits to the 512 bit grade encryption through a Man-In-The-Middle (MITM) attack. Therefore, both Web browsers and mail servers using TLS may be exposed to this vulnerability. In particular, Diffie-Hellman key exchange is a popular cryptographic algorithm that allows Internet protocols to agree on a shared key and negotiate a secure connection. However, this Diffie-Hellman key exchange can be used as a means of Logjam attack. In an MITM attack for this attack, the attacker tries to connect to the server using the \textbf{DHE$\_$EXPORT} cipher suite instead of the client. This can be performed by a fault in the diffie-Hellman key exchange-based TLS protocol. A key that has been reduced to 512 bits due to an MITM attack can be recovered through numerous CPUs.
+\subsubsection*{Logjam Attack}
+Adrian \textit{et al}.\cite{logjam} introduced Logjam attack in 2015. Unlike DROWN attacks based on the construction of the SSLv2 protocol, Logjam attacks are based on the underlying construction issues of the TLS protocol. This attack can downgrade the TLS connection from the existing 1024 bits to the 512 bit grade encryption through a Man-In-The-Middle (MITM) attack. Therefore, both Web browsers and mail servers using TLS may be exposed to this vulnerability. In particular, Diffie-Hellman key exchange is a popular cryptographic algorithm that allows Internet protocols to agree on a shared key and negotiate a secure connection. However, this Diffie-Hellman key exchange can be used as a means of Logjam attack. In an MITM attack for this attack, the attacker repeatedly tries to connect to the server using the \textbf{DHE$\_$EXPORT} cipher suite instead of the client. This can be performed by a fault in the diffie-Hellman key exchange-based TLS protocol. A key that has been reduced to 512 bits due to an MITM attack can be recovered through numerous CPUs.
 
-This problem can also be resolved by updating the version of OpenSSL as well as the DROWN attack. This is because TLS client protection has been added to deny handshake if the Diffie-Hellman parameter is shorter than 768 bits. It is also a good solution to disable the attacking \textbf{DHE$\_$EXPORT} and create a new 2048-bit Diffie-Hellman group.
+This problem can also be resolved by updating the version of OpenSSL as well as the DROWN attack. This is because TLS client protection has been added to deny handshake if the Diffie-Hellman parameter is shorter than 768 bits. Not only this, it is also a good solution to disable the attacking \textbf{DHE$\_$EXPORT} and create a new 2048-bit Diffie-Hellman group.
 
-\subsection{FREAK Attack}
-Factoring RSA Export keys (FREAK) attack that was introduced in 2015 is similar to Logjam attack. Both attacks weaken the cryptosystem by reducing the key size to 512 bits. However, FREAK attack is a running-related vulnerability and Logjam attack differs in that it is a vulnerability in the underlying construction of the TLS protocol itself.
+\subsubsection*{FREAK Attack}
+Factoring RSA Export keys (FREAK) attack that was introduced in 2015 is similar to Logjam attack. Both attacks weaken the cryptosystem by reducing the key size to 512 bits. However, FREAK attack is a running-related vulnerability and Logjam attack differs in that it is a vulnerability in the underlying construction of the TLS protocol itself. FREAK attack uses "Export RSA" for MITM attack. "Export RSA" refers to a cryptographic system that intentionally weakens the encryption key and is limited to a maximum of 512 bits. This is because, in 1993, when Netscape first developed SSL, the US government severely restricted the export of encryption systems.
+
+The MITM attack principle using "Export" RSA is as follows. 
+\begin{enumerate}[label=]
+      \item 1) Requests 'standard RSA' cipher suites in the Hello message of the client.
+      \item 2) The MITM attacker modifies this message by requesting 'export RSA'.
+      \item 3) The server responds with a 512-bit export RSA key signed with a long-term key.
+      \item 4) Due to a bug in OpenSSL and SecureTransport, the client accepts this weak key.
+      \item 5) The attacker restores the corresponding RSA decryption key.
+      \item 6) When the client encrypts the 'pre-master secret' and sends it to the server, the attacker decrypts it to recover the TLS 'master secret'.
+      \item 7) From this point onwards, the attacker will see plain text and will be able to inject any of them.    
+\end{enumerate}  
+
+      
+Once an attacker successfully decrypts the RSA's decryption key, the MITM attack is valid until the attacked server is restarted. Currently, the length of the key has increased significantly, but this attack is threatening enough because there are still many sites that support this "export RSA". 
+
+The way to prevent this attack is almost the same as the attacks mentioned above. User only have to patch the lower version of OpenSSL to the higher version, which can completely prevent FREAK attack.
+
+
 
 \begin{table}[]
 \centering
@@ -111,6 +143,9 @@ Factoring RSA Export keys (FREAK) attack that was introduced in 2015 is similar 
 \begin{tabular}[c]{@{}c@{}}March\\  2016\end{tabular}     & DROWN                                                            & \begin{tabular}[c]{@{}c@{}}Sites that \\ support \\ SSLv2\end{tabular}                            & \begin{tabular}[c]{@{}c@{}}Disable SSLv2 \\ and/or update\\  OpenSSL\end{tabular}                   \\ \hline
 \end{tabular}
 \end{table}
+
+\subsubsection{weakness of random number generation}
+
 
 \section{Evaluation}
 

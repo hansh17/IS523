@@ -63,21 +63,39 @@ Authors of this paper presents a structual attack on the searchable encryption s
 \par The frequency analysis attack, which is the base of this attack, requires a random set of plaintexts. Then the attacker analyze both victim's encrypted keyword frequency and the plaintext's keywords frequency. Compare them, and make guess to those plaintexts based on similarity of those frequencies. This paper uses cocurrency of two words instead of one. Meaning that instead of analyzing single word occurrence, they analyze the frequency of two words occurring at the same time on both victim's keywords and the plaintext's keywords. Then build the graph with each keywords representing the node and the edge representing the co-occurrence frequency to match those words, and the ShadowCrypt is broken with higher success rate than the frequency analysis attack.
 \par This doesn't work straight for the Mimesis as they include $n$ values for a single keyword, making the graph's node n times larger without any informative data. Thus, we have to sort those hashed words into single keywords. This can be guessed with frequency analysis upon the number of same hash occurrence. group the hashes with similar frequency, then tally the size of those groups. Most frequent group size is the value $n$ the client's redundant hashes for single keyword. Then we group those hashes together to represent a single keyword and run the same attack we used against the ShadowCrypt.
 
-
-
 \section{Evaluation}
 
+\subsection{Symmetric Ciphers and Its Applications}
 
+\begin{table}[]
+\centering
+
+\label{my-label}
+\begin{tabular}{lll}
+                       & P+P & P+A       \\
+Shared Memory & No          & No                \\
+Granularity            & Cache Set   & Cache Set         \\
+Timers & Yes         & No                \\
+Dynamic Phase         & No          & Yes               \\
+Multiple Sets  & Yes         & Yes(restrictions) \\
+Speed                  & Fast        & Faster            \\
+Accuracy               & High        & Higher           
+\end{tabular}
+\caption{Comparison between Prime+Probe(P+P) and Prime+Abort(P+A)}
+\end{table}
+
+\subsubsection{Cache Attacks}
+
+We would compare and evaluate each attacks explained to their original motivation. First, we would compare $PRIME+ABORT$ and $PRIME+PROBE$. The major difference from the $PRIME+PROBE$ and the $PRIME+ABORT$ is the requirement of the timer. The former needs an accurate timer while the latter doesn't, making it more responsive on the cache eviction. This makes $PRIME+ABORT$ to have a less room for a noise to kick in, and also doesn't require needless cycle waiting for reload to occur as it is reaped right away. Some disadvantage is that $PRIME+ABORT$ requires more resource, such as threads, to accurately carry out the attack on multiple cache sets while $PRIME+PROBE$ does not. Also $PRIME+ABORT$ requires more recent Intel chips than $PRIME+PROBE$, but since the former can be launched even onto the 4th generation of Intel chips for servers, which makes the attack practical for most cases.
+\par For ARMageddon, it is an expanded version of the family of $FLUSH+RELOAD$ attacks. It makes the original attack more feasible as all of cache attacks, $PRIME+PROBE$, $FLUSH+RELOAD$ and even $PRIME+ABORT$ are bound to the Intel architecture. However ARMageddon make the attack possible for ARM architectures. And while doing so, it was able to reduce the requirements for the attack such as flush-free, no shared cache and no inclusive policy on cache management.
+
+\subsubsection{Searchable Encryption Attacks}
+
+The file-injection attack proposed in 'All Your Queries are Belong to Us' is an improved version of file-injection proposed in 2015. The previous file-injection attack assumed the complete file leakage, which made attack less valuable. However, newly presented attack required the partial file leakage or, even better, no file leakage if the message permits. This made the file-injection attacks feasible when the attacker knows less information, making it more meaningful in uncovering cipher texts and practicality. Also this bypasses search query padding mitigation, making the attack harder to defend.
+\par The structural attack of Shadow Nemesis is an improved version of the frequency analysis attack. Co-occurrence of two words is tend to give more unique data to compare between the plaintext and the ciphered texts than single word frequencies. Yet, this attack can be partially, if not completely, mitigated if those schemes enforce a dummy keyword inserted in front, rendering more pairs useless as the dummy degrades the uniqueness of word pairs.
+\par If we compare two papers introduced, the former is more generic, but it is a chosen plaintext attack. To be more precise, before we filter out and blindly guess the keywords, the attack is a non-adaptive attack. However if we filter out the queries, it makes this attack an adaptive CPA. The latter, meanwhile, cannot be applied to general scheme, but is easy to achieve as it is a known plaintext attack.
 
 \section{Conclusion}
-
-\begin{thebibliography}{9}
-\bibitem{a}
-Authors, ``Title,'' {\em Journal}, Pages, etc...
-\bibitem{b}
-Authors, {\em Book title}, Publisher, Year, etc...
-
-\end{thebibliography}
 
 \end{document}
 % end of file

@@ -24,6 +24,10 @@ $PRIME+PROBE$ attacks first loads and occupies a cache set, a set of cache lines
 $FLUSH+RELOAD$ attacks relies upon the inclusive property of the cache policy that is held by the Intel chips. The inclusive property of the cache is that everything on L1 cache should be also on L3 cache. Thus, whenever a cache line is loaded on L1 cache, they are also loaded on L3 cache. Likewise, when a CLFLUSH, or cache flush is called for a cache line within L1 cache, then the same line is evicted from L3 cache.\par
 The basic idea of $FLUSH+RELOAD$ is both victim core and the attacker's core load same line of data or instruction from the shared memory. Then the attacker flush the shared cache line from its core. Flushed from the L1 cache, the same line is evicted from L3 cache, and also evicted from the victim's L1 cache as a cascade. Now what we have to observe is that whenever victim cache reloads the same line onto its cache, the very same line is loaded onto the L3 cache again. Meaning that when the attacker reloads the line, the reload time is shortened. This attack obviously need a shared memory between the victim and the attacker, but as an opposite to the $PRIME+PROBE$ attack, it can attack as small as a single line, giving more granuality on the attack.
 
+\subsection{Searchable Encryption}
+
+Used commonly in the email servers, the searchable encryption is an encryption scheme that is designed to facilitate a way to search keyword from an encrypted message without decrpyting it. This scheme is used to encrypt a message from the client and then stored in the external email server where the email service provieder is not allowed to read the content of the email for the privacy. When encrypting the message, whether using public key scheme or symmetric scheme, the client also encrypts all the significant words in the message by the words then tag them in front of the message. Then the server gathers those keywords and index those keywords by the message ids, then store them. Later, when the client queries the keyword what server does is to look up the encrypted query word in the index and return all the messages within that index.
+
 \section{Classification}
 
 \subsection{Symmetric Ciphers and Its Applications}
@@ -43,7 +47,9 @@ Our known and famous $FLUSH+RELOAD$ attack was designed to attack the Intel x86 
 
 $PRIME+ABORT$ focuses on integrating new hardware feature for Intel chips, namely Intel TSX. Simply put, Intel TSX is the hardware implementation of transactional memory, which has similar concept to a transaction in the database. Utilizing Intel TSX goes as follows, a transaction of instructions are either completed or aborted in the transactional memory. Among those abortion conditions, there is a rule that aborts a transaction whenever the cache that the transation is currently using is evicted, the transaction is aborted. Using this rule, the attacker would detect the cache eviction right away instead of wating a fixed term and measuing the data read time. Thus, the real attack loads and occupies whole cache set with the transactional memory, which is similar to the $PRIME+PROBE$. Then the attacker waits for the victim to evict the cache. When the victim evicts the cache, then the transaction is aborted right away, letting the attacker know the exact moment the cache is evicted. This attack proves to be more superior to $PRIME+PROBE$ as it doesn't require any kind of timer as eviction is detected right away. Also this attack is much faster and has less noise than the existing one.
 
-\subsubsection{Test}
+\subsubsection{Searchable Encryption Attacks}
+
+The aim for the attackers attacking the searchable encryption is the query recovery, meaning that the attacker needs to find out the plaintext of the encrypted query. The query encryption is significant breach in the privacy as these keywords build up a message which the client saved in the server, and ultimately recover the plaintext for the whole message. The papers included in these attack covers both generic attack and the structural attack on the searchable encryption scheme.
 
 
 

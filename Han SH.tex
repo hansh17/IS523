@@ -42,8 +42,8 @@ The contents of the first section.
 \newpage
 \section{Background}
 
-\subsection {RSA}
-RSA is a asymmetric key cryptosystem proposed by Rivest, Shamir, and Adleman [35Ms]. This system has public key and private key. System is defined as follows:
+\subsection {RSA cryptosystem}
+RSA is a asymmetric key cryptosystem proposed by Rivest, Shamir, and Adleman [35Ms]. This system has public key and private key. RSA Scheme is defined as follows:
 
 \textbf{Key Generation}
 \begin{enumerate}[label=]
@@ -69,10 +69,72 @@ RSA is a asymmetric key cryptosystem proposed by Rivest, Shamir, and Adleman [35
       \item 2) Check whether $M=M'$
 \end{enumerate} 
 
-Security of RSA is relied on hardness of Interger Factorization Problem(IFP). If we want to recover plaintext from ciphertext, we should know $p$ or $q$ or $d$. However, it is computationally infeasible to factorize 1024-bit (or larger) key $n$ with general algorithms such as the number field sieve (NFS) or the older quadratic sieve (MPQS). Thus if we correctly generate $p$ and $q$, then security of RSA is guaranteed.
+Security of RSA is relied on hardness of Interger Factorization Problem(IFP). If we want to recover plaintext from ciphertext, we should know $p$ or $q$ or $d$. It is computationally infeasible to factorize 1024-bit (or larger) key $n$ with general algorithms such as the number field sieve (NFS) or the older quadratic sieve (MPQS). Thus if we correctly generate $p$ and $q$, then security of RSA is guaranteed.
+
+\subsection{Digital Signature Algorithm(DSA)}
+DSA is a Federal Information Processing Standard for digital signatures. This scheme is a variant of ElGamal signature scheme. Details of scheme is described as follows:
+\\
+
+\textbf{Parameters}: Let $H$ be a collision-resistant hash function. Let $q$ be a large prime (usually, 160 bits are used). Choose prime number $p$ such that $q$ divides $q-1$. Let $g<p$ be a primitive element of $Z_p^*$
+\\
+
+\textbf{Key Generation}
+\begin{enumerate}[label=]
+      \item 1) Choose a secret key $x$ randomly with $0<x<q$
+      
+      \item 2) Compute $y \equiv g^x$ (mod $p$)
+      
+      \item 3) Public key is $y$; long-term secret key is $x$
+\end{enumerate}
+
+\textbf{Signature Generation}
+\begin{enumerate}[label=]
+      \item 1) Choose a random ephemeral secret $k$ such that $0<k<q$
+      
+      \item 2) Compute $r \equiv (g^k$ mod $p$) mod $q$
+      
+      \item 3) Compute $s \equiv (H(m)+xr)k^{-1}$ (mod $q$)
+      
+      \item 4) The signature is ($r,s$)
+\end{enumerate} 
+
+\textbf{Verification}
+\begin{enumerate}[label=]
+      \item 1) Reject the signature if $0<r<q$ or $0<s<q$ is not satisfied
+      \item 2) Compute $\omega = s^{-1}$ mod $q$
+      \item 3) Compute $u_1 = H(m) \cdot \omega$ mod $q$
+      \item 4) Compute $u_2 = r \cdot \omega$ mod $q$
+      \item 5) Compute $v=(g^{u_1} y^{u_2}$ mod $p$) mod $q$
+      \item 6) Check whether $v = r$
+\end{enumerate} 
+
+Secutify of DSA is relied on hardness of Discrete Logarithm Problem(DLP). If we want to forge signature, we have to know long-term secret key $x$ or ephemeral secret key $k$. Thus it is essential that only verifier knows $x$ and $k$.
 
 \subsection{Coppersmith's Algorithm}
+Coppersmith's algorithm [] is devised to find small roots of univariate modular equations. This root finding algorithm is based on the LLL-reduction algorithm by Lenstra, Lenstra, and Lovasz [17]. The main idea is to encode polynomial equations with small solutions as coefficient vectors that have a small Euclidean norm. Coefficient vectors will be found by an application of the LLL-reduction algorithm.
+The detail of algorithm is described as follows:
 
+\textbf{Input} : polynomial $f(x)$ of degree $\delta$, modulus $N$ of unknown factorization that is a multiple of $b$, a lower bound $b \geq N^{\beta}$, $\epsilon \leq {1 \over \gamma} \beta$ where $0<\beta \leq 1$
+\\
+
+\textbf{Algorithm}
+\begin{enumerate}[label=(\roman*)]
+      \item Choose $m=\lceil {\beta^2 \over \delta \epsilon} \rceil$ and t = $\lfloor \delta m ({1 \over \beta}-1) \rfloor$. 
+      
+      Compute the polynomials 
+      
+      $g_{i,j} (x) = x^j N^i f^{m-i} (x)$ \\ for $i=0,...,m-1$ ,  $j=0,...,\delta-1$
+      
+      $h_i(x) = x^i f^m (x)$ for $i=0,...,t-1$
+      \item Compute the bound $ X= {1 \over 2} \lceil N^{{\beta^2 \over \delta} - \epsilon} \rceil$. Construct the lattice basis $B$, where the basis vectors of $B$ are the coefficient vectors of $g_{i,j}(xX)$ and $h_i(xX)$.
+      \item Apply the LLL algorithm to the lattice basis B. Let $v$ be the shortest vector in the LLL reduced basis. The vector $v$ is the coefficient vector of some polynomial $g(xX)$. Construct $g(x)$ from $v$.
+      \item Find the set $R$ of all roots of $g(x)$ over the integers using standard methods. For every root $x_0 \in R$ check whether gcd$(N,f(x_0)) \geq N^{\beta}$. If this condition is not satisfied, then remove $x_0$ from $R$.
+\end{enumerate} 
+
+\textbf{Output}: Set $R$, where $x_0 \in R$ whenever $f(x_0)=0$ mod $b$ for $|x_0| \leq X$.
+\\
+
+This algorithm can be extended to \textit{Howgrave-Graham method} [].
 
 \section{Classification}
 
@@ -82,9 +144,9 @@ Security of RSA is relied on hardness of Interger Factorization Problem(IFP). If
 \begin{enumerate}[label=]
        \item[1)] \textbf{Invest the most significant bytes}: There are a lot of methods to generate prime numbers. Petr [] invested a large number of RSA key pairs generated from 22 software libraries (both open-source and closed-source) including openSSL and GNU Crypto and 16 different cryptographic smart cards including Infineon JTOP 80K and NXP J2A080. It is possible to find the origin of public RSA keys by analyzing the distributions of specific bits of primes and moduli. This is because source libraries and smart cards have distinct features. The reason of distinct feature is originated from various factors to generate primes. To be specific, prime search method, prime pair selection, whether to include blum integers (the number always congruent to 1 modulo 4), whether $p-1$ contains small prime factors, whether $p-1$ contains a large prime factor, whether $p+1$ has a large prime factor, whether $p$ and $q$ differ somewhere in their top bits, whether sufficient bit length of the private exponent $d$ is guaranteed are taken into consideration for prime generation. Classification process is as follows: 1) Bits of moduli known to carry bias are identified with additional bits derived from mask which has 6+3 bits. 2) Compute a given source in the learning set. 3) The bits selected by the mask are extracted as a particular value $v$ for classification of an unknown public key. From using this method, libraries and smart cards can be classified with high probability. Petr apply this methods to three real-world datasets: the IPv4 HTTPs handshakes set[9], Certificate Transparency set [10], and the PGP key set[30]. As a result, they obtain an estimate of the sources. From this work, a typical failure scenario that produces weak keys is identified. 
        
-       \item[2)] \textbf{Search for common factor of $N$}: Nadia [] tries to find vulnerability of RSA cryptosystem from searching two important cryptographic protocols, TLS and SSH. They collected 5.8 million unique TLS certificates and 6.2 million unique SSH host keys. To analyze the data set, GCD computation on whole data set is executed. Since computing GCDs of every pair of integers in a large set spends a lot of time, Bernstein algorithm is used for GCD computation. From the computation on TLS scan and SSH scans, 714,243 keys in TLS scan and 981,166 keys in SSH scan are found to be vulnerable. Also, 640,81 RSA keys in TLS and 105,728 DSA keys in SSH can be compromised. The root cause for this observation is derived from using insecure RNGs. The Linux RNG takes entropy from three entropy pools: time of boots, keyboard/mouse, and disk access timing. Since it is too short to generate enough entropy in 60 seconds, boot-time entropy hole occurs if key generation is proceeded during the initial boot. Same situation may occur for embedded devices. From this work, study on random number generation of prime number become more important.
+       \item[2)] \textbf{Search for common factor of $N$}: Nadia [] tries to find vulnerability of RSA cryptosystem from searching two important cryptographic protocols, TLS and SSH. They collected 5.8 million unique TLS certificates and 6.2 million unique SSH host keys. To analyze the data set, GCD computation on whole data set is executed. Since computing GCDs of every pair of integers in a large set spends a lot of time, Bernstein's method [] is used for GCD computation. From the computation on TLS scan and SSH scans, 714,243 keys in TLS scan and 981,166 keys in SSH scan are found to be vulnerable. Also, 64,081 RSA keys in TLS and 105,728 DSA keys in SSH can be compromised. The root cause for this observation is derived from using insecure RNGs. The Linux RNG takes entropy from three entropy pools: time of boots, keyboard/mouse, and disk access timing. Since it is too short to generate enough entropy in 60 seconds, boot-time entropy hole occurs if key generation is proceeded during the initial boot. Same situation may occur for embedded devices. This achievement is extended to whole internet.~ From this work, study on random number generation of prime number become more important.
        
-       \item[3)] \textbf{Fingerprint key based on Coppersmith's algorithm}: Matus [] studied on an algorithmic flaw in the construction of primes for RSA key generation in a widely-used library of a major manufacturer of cryptographic hardware. They designed an extension of Coppersmith's factorization attack. This method does not need additional information except modulus $n$ and does not depend on a weak number generator.   
+       \item[3)] \textbf{Fingerprint key based on Coppersmith's algorithm}: Matus [] studied on an algorithmic flaw in the construction of primes for RSA key generation in a widely-used library of a major manufacturer of cryptographic hardware. They designed an extension of Coppersmith's factorization attack. This method does not need additional information except modulus $n$ and does not depend on a weak number generator. The reason why coppersmith's attack on RSA is effective is RSA primes generated by the $RSALib$ has a unique property. These primes have the following form: $p=k*M + (65537^a$ mod $M$). The integers $k,a$ are unknown, and RSA primes differ only in their values of $a$ and $k$ for keys of the same size. The major characteristic of the RSA keys is that the size of M is large and almost comparable to the size of the prime p. It causes a significant loss of entropy of resulting RSA primes. From exploiting this vulnerability, electronic identity documents (eIDs) domain is significantly affected. Also it is possible to exploit Trusted Platform Modules (TPMs) with non-negligible probability. Thus, NIST FIPS 140-2 and CC EAL 5+ certified devices are shown to be vulnerable to Coppersmith's attack.
 \end{enumerate}
 
 \begin{thebibliography}{9}
